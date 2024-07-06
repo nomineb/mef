@@ -1,0 +1,8 @@
+scr/__pyache__
+
+*.parquet
+*.sqlite
+
+.DS_Store
+
+data/*
