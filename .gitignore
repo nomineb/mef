@@ -1,5 +1,7 @@
 scr/__pyache__
 
+__pyache__
+
 *.parquet
 *.sqlite
 
