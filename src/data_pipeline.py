@@ -97,6 +97,16 @@ def main(args):
         args.skip_outputs,
     )
 
+    # 3. Aggregate the cleaned CEMS data by different options and save the results in the same folder
+    #################################################################################################
+
+    output_data.output_aggregated_data(
+        cems,
+        path_prefix,
+        year,
+        args.skip_outputs,
+    )
+
 
 if __name__ == "__main__":
     import sys
