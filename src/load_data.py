@@ -73,7 +73,6 @@ def load_eia_plants():
         "iso_rto_code"
         ]].drop_duplicates()
     
-    plants_eia_filtered = plants_eia_filtered[~plants_eia_filtered.nerc_region.isin(OLD_NERC)]
     plants_eia_filtered.dropna(inplace=True)
     return plants_eia_filtered
 

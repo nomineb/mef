@@ -1,6 +1,6 @@
-scr/__pyache__
+scr/__pycache__
 
-__pyache__/
+__pycache__/
 
 *.parquet
 *.sqlite
