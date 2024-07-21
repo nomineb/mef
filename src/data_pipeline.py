@@ -88,7 +88,7 @@ def main(args):
 
     # 3. Output cleaned cems data
     ####################################################################################
-
+    logger.info("3. Outputting CEMS data")
     output_data.output_intermediate_data(
         cems,
         "cems_cleaned",
@@ -99,7 +99,7 @@ def main(args):
 
     # 3. Aggregate the cleaned CEMS data by different options and save the results in the same folder
     #################################################################################################
-
+    logger.info("4. Outputting CEMS data, aggregated by different regions")
     output_data.output_aggregated_data(
         cems,
         path_prefix,
