@@ -18,8 +18,6 @@ PUDL_ENGINE = sa.create_engine("sqlite:///" + downloads_folder("pudl.sqlite/pudl
 KG_IN_LB = 0.453592
 KG_IN_TON = 907.185
 
-OLD_NERC =["WSCC", "ERCOT", "UNK", "MAAC", "ECAR", "MAIN", "MAPP", "ASCC", "HICC"]
-
 def load_cems_data(year):
     """
     Loads CEMS data for the specified year from the PUDL database

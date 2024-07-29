@@ -24,6 +24,7 @@ def main():
     # # Calculate factors and save results
     print('Calculating factors')
     save = args.save
+    year = args.year
     calc_factors = calculate_mefs if args.factorType == 'marginal' else calculate_aefs
     grouping_names = ['SeasonalTOD', 'MonthTOD', 'TOD', 'YearOnly', 'Month']
     grouping_cols = [['year', 'season', 'hour'], ['year', 'month', 'hour'], 
@@ -32,25 +33,25 @@ def main():
     for grouping_name, grouping in zip(grouping_names, grouping_cols):
         print('{}:'.format(grouping_name))
         print('ISO/RTO...')
-        calc_factors(rto_df, 'iso_rto_code', grouping + ['iso_rto_code'], grouping_name, save)
+        calc_factors(rto_df, 'iso_rto_code', grouping + ['iso_rto_code'], grouping_name, save, year)
         print('NERC...')
-        calc_factors(nerc_df, 'nerc_region', grouping + ['nerc_region'], grouping_name, save)
+        calc_factors(nerc_df, 'nerc_region', grouping + ['nerc_region'], grouping_name, save, year)
         print('State...')
-        calc_factors(state_df, 'state', grouping + ['state'], grouping_name, save)
+        calc_factors(state_df, 'state', grouping + ['state'], grouping_name, save, year)
         print('eGRID...')  
-        calc_factors(egrid_df, 'egrid_subregions', grouping + ['egrid_subregions'], grouping_name, save)
+        calc_factors(egrid_df, 'egrid_subregions', grouping + ['egrid_subregions'], grouping_name, save, year)
 
     if args.factorType == 'average':
         grouping = ['operating_datetime_utc']
         print('Hour:')
         print('ISO/RTO...')
-        calculate_aefs_hourly(rto_df, 'iso_rto_code', grouping + ['iso_rto_code'], save)
+        calculate_aefs_hourly(rto_df, 'iso_rto_code', grouping + ['iso_rto_code'], save, year)
         print('NERC...')
-        calculate_aefs_hourly(nerc_df, 'nerc_region', grouping + ['nerc_region'], save)
+        calculate_aefs_hourly(nerc_df, 'nerc_region', grouping + ['nerc_region'], save, year)
         print('State...')
-        calculate_aefs_hourly(state_df, 'state', grouping + ['state'], save)
+        calculate_aefs_hourly(state_df, 'state', grouping + ['state'], save, year)
         print('eGRID...')
-        calculate_aefs_hourly(egrid_df, 'egrid_subregions', grouping + ['egrid_subregions'], save)
+        calculate_aefs_hourly(egrid_df, 'egrid_subregions', grouping + ['egrid_subregions'], save, year)
 
 
 
@@ -139,7 +140,7 @@ def label_temporal_groupings(df):
     return df
 
 
-def calculate_mefs(df, df_name, grouping, grouping_name, save):
+def calculate_mefs(df, df_name, grouping, grouping_name, save, year):
 
     def calc_mefs_helper(data):
         x = data[XCOL].values
@@ -154,12 +155,12 @@ def calculate_mefs(df, df_name, grouping, grouping_name, save):
     #results_df = sum_damages(results_df, 'MEF')
     
     # Save factors
-    dirname = os.path.join(save, 'mefs', grouping_name)
+    dirname = os.path.join(save, str(year),'mefs', grouping_name)
     if not os.path.exists(dirname): os.makedirs(dirname)
     results_df.to_csv(os.path.join(dirname, '{}_mefs.csv'.format(df_name)))
 
 
-def calculate_aefs(df, df_name, grouping, grouping_name, save):
+def calculate_aefs(df, df_name, grouping, grouping_name, save, year):
 
     def calc_aefs_helper(data):
         sums = data[[XCOL]+LABELS].dropna().sum()
@@ -172,11 +173,11 @@ def calculate_aefs(df, df_name, grouping, grouping_name, save):
     results_df = sum_damages(results_df, 'AEF')
     
     # Save factors
-    dirname = os.path.join(save, 'aefs', grouping_name)
+    dirname = os.path.join(save, str(year), 'aefs', grouping_name)
     if not os.path.exists(dirname): os.makedirs(dirname)
     results_df.to_csv(os.path.join(dirname, '{}_aefs.csv'.format(df_name)))
 
-def calculate_aefs_hourly(df, df_name, grouping, save):
+def calculate_aefs_hourly(df, df_name, grouping, save, year):
 
     # Divide emissions/damages by generation, preserving index information 
     df = df.reset_index().set_index(grouping)
@@ -185,7 +186,7 @@ def calculate_aefs_hourly(df, df_name, grouping, save):
     results_df = sum_damages(results_df, 'AEF')
 
     # Save factors
-    dirname = os.path.join(save, 'aefs', 'Hour')
+    dirname = os.path.join(save, str(year), 'aefs', 'Hour')
     if not os.path.exists(dirname): os.makedirs(dirname)
     results_df.to_csv(os.path.join(dirname, '{}_aefs.csv'.format(df_name)))
 
