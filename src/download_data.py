@@ -116,6 +116,7 @@ def download_pudl_data(source: str = "aws"):
                 requires_unzip=True,
                 should_clean=True,
             )
+            
 
             # add a version file
             with open(downloads_folder("pudl_sqlite_version.txt"), "w+") as v:
