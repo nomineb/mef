@@ -103,7 +103,7 @@ def download_pudl_data(source: str = "aws"):
 
     if source == "aws":
         # define the urls
-        pudl_db_url = "https://s3.us-west-2.amazonaws.com/pudl.catalyst.coop/v2023.12.01/pudl.sqlite.gz"
+        pudl_db_url = "https://s3.us-west-2.amazonaws.com/pudl.catalyst.coop/nightly/pudl.sqlite.zip"
         epacems_parquet_url = "https://s3.us-west-2.amazonaws.com/pudl.catalyst.coop/v2023.12.01/hourly_emissions_epacems.parquet"
 
         # download the pudl sqlite database
@@ -111,9 +111,9 @@ def download_pudl_data(source: str = "aws"):
             output_filepath = downloads_folder("pudl.sqlite")
             download_helper(
                 pudl_db_url,
-                download_path=output_filepath + ".gz",
+                download_path=output_filepath + ".zip",
                 output_path=output_filepath,
-                requires_gzip=True,
+                requires_unzip=True,
                 should_clean=True,
             )
 

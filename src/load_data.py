@@ -13,7 +13,7 @@ from pudl.metadata.fields import apply_pudl_dtypes
 logger = get_logger(__name__)
 
 # initialize the pudl_engine
-PUDL_ENGINE = sa.create_engine("sqlite:///" + downloads_folder("pudl.sqlite"))
+PUDL_ENGINE = sa.create_engine("sqlite:///" + downloads_folder("pudl.sqlite/pudl.sqlite"))
 
 KG_IN_LB = 0.453592
 KG_IN_TON = 907.185
