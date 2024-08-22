@@ -26,9 +26,9 @@ def main():
     save = args.save
     year = args.year
     calc_factors = calculate_mefs if args.factorType == 'marginal' else calculate_aefs
-    grouping_names = ['SeasonalTOD', 'MonthTOD', 'TOD', 'YearOnly', 'Month']
+    grouping_names = ['SeasonalTOD', 'MonthTOD', 'TOD', 'YearOnly', 'Month', 'TimeSeries', 'TimeSeriesHour']
     grouping_cols = [['year', 'season', 'hour'], ['year', 'month', 'hour'], 
-        ['year', 'hour'], ['year'], ['year', 'month']]
+        ['year', 'hour'], ['year'], ['year', 'month'], ['month', 'weektype', 'hour'], ['month', 'hour']]
 
     for grouping_name, grouping in zip(grouping_names, grouping_cols):
         print('{}:'.format(grouping_name))
@@ -129,6 +129,7 @@ def label_temporal_groupings(df):
     df['year'] = df.index.year
     df['month'] = df.index.month
     df['hour'] = df.index.hour
+    df['weektype'] = df.index.weekday.map(lambda x: 'weekday' if x < 5 else 'weekend')
 
     # Get season
     #  Summer = May-Sept
@@ -212,7 +213,7 @@ def format_regression_results(results_df):
     # Extract slopes, standard error, r-value, and intercept
     stats_list = []
     stats_fns = [lambda x: x.slope, lambda x: x.stderr, lambda x: x.rvalue, lambda x: x.intercept, lambda x: x.pvalue]
-    stats_labels = ['est', 'se', 'r', 'int']
+    stats_labels = ['est', 'se', 'r', 'int', "p"]
     for fn, label in zip(stats_fns, stats_labels):
         df = results_df.map(fn).add_suffix('-{}'.format(label))
         stats_list.append(df)
@@ -220,7 +221,7 @@ def format_regression_results(results_df):
     # Concatenate extracted values and sort columns in order
     sep_results_df = pd.concat(stats_list, axis=1)
     col_order = np.array(
-        ['{0}-est,{0}-se,{0}-r,{0}-int'.format(x).split(',') for x in LABELS]).flatten()
+        ['{0}-est,{0}-se,{0}-r,{0}-int,{0}-p'.format(x).split(',') for x in LABELS]).flatten()
     return sep_results_df.reindex(col_order, axis=1)
 
 
