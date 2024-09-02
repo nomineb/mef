@@ -29,7 +29,7 @@ COLUMNS = {
         "plant_id_epa",
         "nerc_region",
         "egrid_subregions",
-        "iso_rto_code",
+        "isorto",
         "state",
         "operating_datetime_utc",
         "gross_load_mw",

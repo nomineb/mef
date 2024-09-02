@@ -33,7 +33,7 @@ def output_aggregated_data(
         df (DataFrame): cleaned CEMS df
     """
 
-    agg_region = ['iso_rto_code', 'nerc_region', 'egrid_subregions', 'state']
+    agg_region = ['isorto', 'nerc_region', 'egrid_subregions', 'state']
     for region in agg_region:
         logger.info(f"Exporting dfs to data/outputs, aggregated by {region}")
         agg_df = get_agg_df(df, region)

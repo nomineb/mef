@@ -18,6 +18,10 @@ PUDL_ENGINE = sa.create_engine("sqlite:///" + downloads_folder("pudl.sqlite/pudl
 KG_IN_LB = 0.453592
 KG_IN_TON = 907.185
 
+NERC_LIST = ['MRO', 'NPCC', 'RFC', 'SERC', 'SPP', 'TRE', 'WECC']
+ISO_RTO_LIST = ['CAISO', 'ERCOT', 'ISONE', 'MISO', 'NYISO', 'PJM', 'SPP', 'OTHER']
+RENAME_REGIONS = {'ISNE': 'ISONE', 'NYIS': 'NYISO', 'SWPP': 'SPP', 'ERCO': 'ERCOT', 'CISO': 'CAISO', 'MISO': 'MISO', 'PJM': 'PJM'}
+
 def load_cems_data(year):
     """
     Loads CEMS data for the specified year from the PUDL database
@@ -54,7 +58,7 @@ def load_cems_data(year):
     cems = convert_to_kg(cems, 'tons', KG_IN_TON)
 
     # merge eia table for spatial aggregation purposes (NERC, ISO/RTO)
-    eia_plant = load_eia_plants()
+    eia_plant = load_eia_plants(year)
     cems = pd.merge(eia_plant, cems, on=["plant_id_eia"], how="right")
 
     # merge egrid data for eGRID subregion association 
@@ -63,16 +67,15 @@ def load_cems_data(year):
 
     return cems
 
-def load_eia_plants():
-    plants_eia = pd.read_sql("out_eia__yearly_plants", PUDL_ENGINE).convert_dtypes(convert_floating=False)
-    plants_eia_filtered = plants_eia[[
-        "plant_id_eia",
-        "nerc_region", 
-        "iso_rto_code"
-        ]].drop_duplicates()
-    
-    plants_eia_filtered.dropna(inplace=True)
-    return plants_eia_filtered
+def load_eia_plants(year):
+    specific_date = f"{year}-01-01"
+    query =  f"""SELECT * FROM core_eia860__scd_plants WHERE report_date = '{specific_date}'"""
+    plants_eia = pd.read_sql(query, PUDL_ENGINE)
+    plants_eia = plants_eia[["plant_id_eia", "nerc_region", "balancing_authority_code_eia"]]
+    plants_eia['balancing_authority_code_eia'] = plants_eia['balancing_authority_code_eia'].map(RENAME_REGIONS)
+    plants_eia.rename(columns={'balancing_authority_code_eia': 'isorto'}, inplace=True)
+
+    return plants_eia
 
 def load_egrid():
     egrid_cols = [

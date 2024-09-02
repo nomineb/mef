@@ -22,6 +22,6 @@ The downloaded raw data will be stored in `data/downloads` and the process and a
 
 After that, in order to calculate the factors, run the following command. --factorType argument takes in two options: average or marginal. 
 ```bash
-python get_factor_estimates.py --factorType marginal. 
+python get_factor_estimates.py --factorType marginal --year 2022
 ```
 The results will be stored in `data/results/`. 

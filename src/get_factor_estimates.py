@@ -33,7 +33,7 @@ def main():
     for grouping_name, grouping in zip(grouping_names, grouping_cols):
         print('{}:'.format(grouping_name))
         print('ISO/RTO...')
-        calc_factors(rto_df, 'iso_rto_code', grouping + ['iso_rto_code'], grouping_name, save, year)
+        calc_factors(rto_df, 'isorto', grouping + ['isorto'], grouping_name, save, year)
         print('NERC...')
         calc_factors(nerc_df, 'nerc_region', grouping + ['nerc_region'], grouping_name, save, year)
         print('State...')
@@ -45,7 +45,7 @@ def main():
         grouping = ['operating_datetime_utc']
         print('Hour:')
         print('ISO/RTO...')
-        calculate_aefs_hourly(rto_df, 'iso_rto_code', grouping + ['iso_rto_code'], save, year)
+        calculate_aefs_hourly(rto_df, 'isorto', grouping + ['isorto'], save, year)
         print('NERC...')
         calculate_aefs_hourly(nerc_df, 'nerc_region', grouping + ['nerc_region'], save, year)
         print('State...')
@@ -83,7 +83,7 @@ def read_process_data(factor_type, year):
     # Generation, and emissions aggregated by ISO/RTO
     rto_df = pd.read_csv(
         os.path.join(os.pardir, 'data', 'outputs', str(year), 
-            f'cems{filename_add}_iso_rto_code_{year}.csv'),
+            f'cems{filename_add}_isorto_{year}.csv'),
         index_col=0, parse_dates=[0])
 
     # Generation, and emissions aggregated by NERC region
@@ -212,8 +212,8 @@ def factor_calculation_helper(df, grouping, calc_fn):
 def format_regression_results(results_df):
     # Extract slopes, standard error, r-value, and intercept
     stats_list = []
-    stats_fns = [lambda x: x.slope, lambda x: x.stderr, lambda x: x.rvalue, lambda x: x.intercept, lambda x: x.pvalue]
-    stats_labels = ['est', 'se', 'r', 'int', "p"]
+    stats_fns = [lambda x: x.slope, lambda x: x.stderr, lambda x: x.rvalue**2, lambda x: x.intercept, lambda x: x.pvalue]
+    stats_labels = ['est', 'se', 'r2', 'int']
     for fn, label in zip(stats_fns, stats_labels):
         df = results_df.map(fn).add_suffix('-{}'.format(label))
         stats_list.append(df)
@@ -221,7 +221,7 @@ def format_regression_results(results_df):
     # Concatenate extracted values and sort columns in order
     sep_results_df = pd.concat(stats_list, axis=1)
     col_order = np.array(
-        ['{0}-est,{0}-se,{0}-r,{0}-int,{0}-p'.format(x).split(',') for x in LABELS]).flatten()
+        ['{0}-est,{0}-se,{0}-r2,{0}-int'.format(x).split(',') for x in LABELS]).flatten()
     return sep_results_df.reindex(col_order, axis=1)
 
 
