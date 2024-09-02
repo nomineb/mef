@@ -26,9 +26,9 @@ def main():
     save = args.save
     year = args.year
     calc_factors = calculate_mefs if args.factorType == 'marginal' else calculate_aefs
-    grouping_names = ['SeasonalTOD', 'MonthTOD', 'TOD', 'YearOnly', 'Month']
+    grouping_names = ['SeasonalTOD', 'MonthTOD', 'TOD', 'YearOnly', 'Month', 'TimeSeries', 'TimeSeriesHour']
     grouping_cols = [['year', 'season', 'hour'], ['year', 'month', 'hour'], 
-        ['year', 'hour'], ['year'], ['year', 'month']]
+        ['year', 'hour'], ['year'], ['year', 'month'], ['month', 'weektype', 'hour'], ['month', 'hour']]
 
     for grouping_name, grouping in zip(grouping_names, grouping_cols):
         print('{}:'.format(grouping_name))
@@ -129,6 +129,7 @@ def label_temporal_groupings(df):
     df['year'] = df.index.year
     df['month'] = df.index.month
     df['hour'] = df.index.hour
+    df['weektype'] = df.index.weekday.map(lambda x: 'weekday' if x < 5 else 'weekend')
 
     # Get season
     #  Summer = May-Sept
